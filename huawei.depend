@@ -5,30 +5,60 @@
 	"lib_time.h"
 	"stdio.h"
 
+1490001222 
+
 1484613606 c:\users\triumph\desktop\huawei\deploy.h
 	"lib_io.h"
+
+1484615570 
 
 1484613844 c:\users\triumph\desktop\huawei\lib_io.h
 
 1484529734 c:\users\triumph\desktop\huawei\lib_time.h
 
-1489836625 source:c:\users\triumph\desktop\huawei\deploy.cpp
+1490001222 source:c:\users\triumph\desktop\huawei\deploy.cpp
 	"deploy.h"
 	<iostream>
-	<vector>
-	<stack>
-	<utility>
-	<map>
-	<stack>
+	<cstring>
+	<cstdio>
+	<cstdlib>
 	<queue>
-	<algorithm>
-	<iterator>
+	<list>
+
+1484615570 source:c:\users\triumph\desktop\huawei\io.cpp
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
-	<math.h>
+	<assert.h>
+	<time.h>
+	<sys/timeb.h>
+	<errno.h>
+	<unistd.h>
+	<signal.h>
 
-1484615570 source:c:\users\triumph\desktop\huawei\io.cpp
+1484613112 source:/home/triumph/Desktop/huawei/cdn.cpp
+	"deploy.h"
+	"lib_io.h"
+	"lib_time.h"
+	"stdio.h"
+
+1484613606 /home/triumph/Desktop/huawei/deploy.h
+	"lib_io.h"
+
+1484613844 /home/triumph/Desktop/huawei/lib_io.h
+
+1484529734 /home/triumph/Desktop/huawei/lib_time.h
+
+1490001840 source:/home/triumph/Desktop/huawei/deploy.cpp
+	"deploy.h"
+	<iostream>
+	<cstring>
+	<cstdio>
+	<cstdlib>
+	<queue>
+	<list>
+
+1484615570 source:/home/triumph/Desktop/huawei/io.cpp
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
