@@ -35,10 +35,13 @@ int consu[MAXN];
 int consu_supply[MAXN];
 int consu_demand[MAXN];
 int path;
+int best_path;
 string topo_string;
 vector<list<int> > topo_list;
+vector<list<int> > best_topo_list;
 
 int planSetSever[MAXN];
+int bestResult = 1000000;
 
 int nodeNum, linkNum, consumeNodeNum;       // 节点数，边数，消费节点数
 int sever_cost;
@@ -138,7 +141,7 @@ int MCMF(int s,int t,int n)
         }
 
         int realDist = dist[t] - edge[pre_i].cost;
-        cout << "edge[pre_i] = " << edge[pre_i].u << endl;
+        // cout << "edge[pre_i] = " << edge[pre_i].u << endl;
 
         mincost += realDist*minflow;
         // if(!setSever[edge[pre_i].v])
@@ -147,10 +150,10 @@ int MCMF(int s,int t,int n)
         //     setSever[edge[pre_i].v] = true;
         // }
 
-        cout << "dist = " << dist[t] << endl;
-        cout << "realDist = " << realDist << endl;
-        cout << "minflow = " << minflow << endl;
-        cout << "mincost = "  << mincost << endl;
+        // cout << "dist = " << dist[t] << endl;
+        // cout << "realDist = " << realDist << endl;
+        // cout << "minflow = " << minflow << endl;
+        // cout << "mincost = "  << mincost << endl;
     }
 
     sumFlow=flow; // 最大流
@@ -284,9 +287,12 @@ void backTrackPath(int s, int t, int n)
 
     memset(setSever, false, sizeof(setSever));
     memset(stackVisit, false, sizeof(stackVisit));
+    memset(consu_supply, 0, sizeof(consu_supply));
+    sever_count = 0;
     list<STNode> st;
     int curNode;
     int curMinFlow;
+    path = 0;
     // int curMinFlowSit;
 
     st.push_back(STNode(s,-1));
@@ -298,8 +304,8 @@ void backTrackPath(int s, int t, int n)
         // cout << "curNode = " << curNode << endl;
         if (curNode == t)
         {
-            cout << "find a path:" << path <<  endl;
-            cout << "size = " << st.size() << endl;
+            // cout << "find a path:" << path <<  endl;
+            // cout << "size = " << st.size() << endl;
             curMinFlow = 0;
 
             list<STNode>::iterator iter = st.begin();
@@ -307,17 +313,17 @@ void backTrackPath(int s, int t, int n)
             if(!setSever[edge[iter->edge].v])
             {
                 edge[iter->edge].cost = 0;
-                cout << "sever sit = "<< edge[iter->edge].v << endl;
+                // cout << "sever sit = "<< edge[iter->edge].v << endl;
                 sever_count++;
                 setSever[edge[iter->edge].v] = true;
-                cout << "sever_count = " << sever_count << endl;
+                // cout << "sever_count = " << sever_count << endl;
             }
 
 
             curMinFlow = 10000;
             for (list<STNode>::iterator iter = st.begin(); iter != st.end(); iter++)
             {
-                cout << iter->node << " ";
+                // cout << iter->node << " ";
                 // cout << iter->node << endl;
                 if (iter->node == source)
                 {
@@ -340,9 +346,9 @@ void backTrackPath(int s, int t, int n)
                 }
 
             }
-            cout << endl;
-            cout << "curMinFlow = " << curMinFlow  << endl;
-            cout << "path back = " << topo_list[path].back() << endl;
+            // cout << endl;
+            // cout << "curMinFlow = " << curMinFlow  << endl;
+            // cout << "path back = " << topo_list[path].back() << endl;
             consu_supply[topo_list[path].back()] += curMinFlow;
             topo_list[path].push_back(curMinFlow);
             path++;
@@ -394,7 +400,7 @@ void backTrackPath(int s, int t, int n)
 }
 
 list<vector<int> > probaibly;
-const int N = 100;
+const int N = 28;
 list<int> st;
 int a[N];
 vector<int> scheme;
@@ -408,11 +414,11 @@ void combin(int pos, int n)
         // cout << "scheme " << endl;
         for (list<int>::iterator iter = st.begin(); iter != st.end(); iter++)
         {
-            cout << *iter << " ";
+            // cout << *iter << " ";
             scheme.push_back(*iter);
         }
         probaibly.push_back(scheme);
-        cout << endl;
+        // cout << endl;
         return;
     }
     else
@@ -431,7 +437,7 @@ void combin(int pos, int n)
 //你要完成的功能总入口
 void deploy_server(char * topo[MAX_EDGE_NUM], int line_num,char * filename)
 {
-    cout << "start  " << endl;
+    // cout << "start  " << endl;
     list<int> result;
     int n = 3;
     // int alledge = NE;
@@ -439,36 +445,39 @@ void deploy_server(char * topo[MAX_EDGE_NUM], int line_num,char * filename)
         a[i] = i;
     }
 
-    for (int i = 0; i < N; i++)
-        cout << a[i] ;
-    cout << endl;
+    // for (int i = 0; i < N; i++)
+        // cout << a[i] << " ";
+    // cout << endl;
     
 
     combin(0, n);
 
     for (list<vector<int> >::iterator iter = probaibly.begin(); iter != probaibly.end(); iter++)
     {
-        
         constructGraph(topo); // NE = alledge;
 
+        // cout << "add edge :" << endl;
         for (int i = 0; i < n; i++)
         {
             addedge(source, (*iter)[i], INF, sever_cost);
+            // cout << (*iter)[i]<< " ";
         }
+        // cout << endl;
 
         int ans = MCMF(source, target, nodeNum + 2);
 
         for (int i = 0; i < NE; i += 2)
         {
             edge[i].flow = edge[i].originCap - edge[i].cap;
-            if (edge[i].flow)
-                cout << edge[i].u << " "<< edge[i].v << " " <<edge[i].flow << endl;
+            // if (edge[i].flow)
+                // cout << edge[i].u << " "<< edge[i].v << " " <<edge[i].flow << endl;
         }
-        cout << "sever_cost = " << sever_cost << endl;
+        // cout << "sever_cost = " << sever_cost << endl;
 
 
         backTrackPath(source, target, nodeNum + 2);
-        cout << "all cost = " << ans + sever_cost * sever_count << endl;
+        int all_cost = ans + sever_cost*sever_count;
+        // cout << "all cost = " << all_cost << endl;
 
         bool flag = false;
         for (int i = 0; i < consumeNodeNum; i++)
@@ -483,11 +492,21 @@ void deploy_server(char * topo[MAX_EDGE_NUM], int line_num,char * filename)
 
         if (!flag)
         {
-            cout << "Could Supply all demand, the result is true.\n";
+            if (bestResult > all_cost)
+            {
+                bestResult = all_cost;
+                best_topo_list = topo_list;
+                topo_list.clear();
+                best_path = path;
+            }
+            
+            // cout << "Could Supply all demand, the result is true.\n";
         }
         else
         {
-            cout << "The result is false.\n";
+            ;
+            
+            // cout << "The result is false.\n";
         }
     }
 
@@ -498,13 +517,13 @@ void deploy_server(char * topo[MAX_EDGE_NUM], int line_num,char * filename)
     // memset(topo_file, '\0', 5000*sizeof(char));
 
 
-    cout << path << endl;
-    sprintf(topo_file, "%d\n\n", path);
+    cout << best_path << endl;
+    sprintf(topo_file, "%d\n\n", best_path);
     cout << endl;
 
-    for (int i = 0; i < path; i++)
+    for (int i = 0; i < best_path; i++)
     {
-        for (list<int>::iterator iter = topo_list[i].begin(); iter != topo_list[i].end(); iter++)
+        for (list<int>::iterator iter = best_topo_list[i].begin(); iter != best_topo_list[i].end(); iter++)
         {
             sprintf(topo_file, "%s%d ", topo_file,*iter);
             cout << *iter << " ";
@@ -512,6 +531,8 @@ void deploy_server(char * topo[MAX_EDGE_NUM], int line_num,char * filename)
         sprintf(topo_file, "%s\n", topo_file);
         cout << endl;
     }
+
+    cout << "bestResult : " << bestResult << endl;
 
     
 	write_result(topo_file, filename);
