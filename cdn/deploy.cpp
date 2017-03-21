@@ -400,12 +400,11 @@ void backTrackPath(int s, int t, int n)
 }
 
 list<vector<int> > probaibly;
-const int N = 28;
+int N;
 list<int> st;
-int a[N];
 vector<int> scheme;
 
-void combin(int pos, int n)
+void combin(int pos, int n, int *a)
 {
     
     if (n == 0)
@@ -427,7 +426,7 @@ void combin(int pos, int n)
         {
             st.push_back(a[i]);
             // cout << a[i] << " ";
-            combin(i + 1, n - 1);
+            combin(i + 1, n - 1, a);
             st.pop_back();
         }
     }
@@ -437,9 +436,13 @@ void combin(int pos, int n)
 //你要完成的功能总入口
 void deploy_server(char * topo[MAX_EDGE_NUM], int line_num,char * filename)
 {
+    sscanf(topo[0], "%d %d %d", &nodeNum, &linkNum, &consumeNodeNum);
+    N = nodeNum;
+    int a[N];
+
     // cout << "start  " << endl;
     list<int> result;
-    int n = 3;
+    int n = 4;
     // int alledge = NE;
     for (int i = 0; i < N; i++) {
         a[i] = i;
@@ -450,7 +453,7 @@ void deploy_server(char * topo[MAX_EDGE_NUM], int line_num,char * filename)
     // cout << endl;
     
 
-    combin(0, n);
+    combin(0, n, a);
 
     for (list<vector<int> >::iterator iter = probaibly.begin(); iter != probaibly.end(); iter++)
     {
