@@ -32,9 +32,13 @@ bool setSever[MAXN];
 bool stackVisit[MAXN];
 int nodeOutFlow[MAXN];
 int consu[MAXN];
+int consu_supply[MAXN];
+int consu_demand[MAXN];
 int path;
 string topo_string;
 vector<list<int> > topo_list;
+
+int planSetSever[MAXN];
 
 int nodeNum, linkNum, consumeNodeNum;       // 节点数，边数，消费节点数
 int sever_cost;
@@ -174,6 +178,8 @@ struct HeapNode
 
 void constructGraph(char * topo[])
 {
+    memset(consu_supply, 0, sizeof(consu_supply));
+    memset(consu_demand, 0, sizeof(consu_demand));
     memset(consu, -1, sizeof(consu));
     init();
     memset(nodeOutFlow, 0, sizeof(nodeOutFlow));
@@ -210,6 +216,7 @@ void constructGraph(char * topo[])
 
         addedge(netNode, target, demand, 0);
         consu[netNode] = num;
+        consu_demand[num]= demand;
     }
 
     priority_queue<HeapNode> myHeap;
@@ -221,31 +228,34 @@ void constructGraph(char * topo[])
 
 
 
-    for (int i = 0; i < nodeNum; i++)
-    {
-        // HeapNode node;
-        // node = myHeap.top();
-        // myHeap.pop();
-        if (consu[i] != -1)
-            addedge(source, i, INF, sever_cost);
-        else
-        {
-            addedge(source, i, INF, sever_cost  );
-            
-        }
-        // cout << "outflow = " << node.outflow << endl;
-        // addedge(source, node.node, INF, node.outflow);
-    }
+    // for (int i = 0; i < nodeNum; i++)
+    // {
+    //     // HeapNode node;
+    //     // node = myHeap.top();
+    //     // cout << "outflow = "  << node.outflow << endl;
+    //     // myHeap.pop();
+    //     // if (consu[i] != -1)
+    //     // {
+    //     //     addedge(source, i, INF, sever_cost + 3);
+    //     // }
+    //     // else
+    //     // {
+    //     //     addedge(source, i, INF, sever_cost   );
+    //     //
+    //     // }
+    //     // cout << "outflow = " << node.outflow << endl;
+    //     
+    //     if (planSetSever[i])
+    //         addedge(source, i, INF, sever_cost);
+    //     
+    // }
 
 
-
-    // addedge(source, 42, INF, sever_cost);
-    // addedge(source, 23, INF, sever_cost);
-    // addedge(source, 9, INF, sever_cost);
-    // addedge(source, 17, INF, sever_cost);
-    // addedge(source, 23, INF, sever_cost);
-    // addedge(source, 45, INF, sever_cost);
-    // addedge(source, 28, INF, sever_cost);
+    // addedge(source, 0, INF, sever_cost);
+    // addedge(source, 1, INF, sever_cost);
+    // addedge(source, 24, INF, sever_cost);
+    
+    // addedge(source, 14, INF, sever_cost);
 }
 
 
@@ -267,6 +277,11 @@ struct STNode
 void backTrackPath(int s, int t, int n)
  {
     topo_list.resize(5000);
+    for (int i = 0; i < 5000; i++)
+    {
+        topo_list[i].clear();
+    }
+
     memset(setSever, false, sizeof(setSever));
     memset(stackVisit, false, sizeof(stackVisit));
     list<STNode> st;
@@ -299,6 +314,7 @@ void backTrackPath(int s, int t, int n)
             }
 
 
+            curMinFlow = 10000;
             for (list<STNode>::iterator iter = st.begin(); iter != st.end(); iter++)
             {
                 cout << iter->node << " ";
@@ -310,6 +326,7 @@ void backTrackPath(int s, int t, int n)
                 else if (iter->node == target)
                 {
                     topo_list[path].push_back(consu[topo_list[path].back()]);
+
                 }
                 else
                 {
@@ -317,12 +334,16 @@ void backTrackPath(int s, int t, int n)
                 }
 
 
-                if (iter->edge != -1 && curMinFlow < edge[iter->edge].flow)
+                if (iter->edge != -1 && curMinFlow > edge[iter->edge].flow)
                 {
                     curMinFlow = edge[iter->edge].flow;
                 }
+
             }
             cout << endl;
+            cout << "curMinFlow = " << curMinFlow  << endl;
+            cout << "path back = " << topo_list[path].back() << endl;
+            consu_supply[topo_list[path].back()] += curMinFlow;
             topo_list[path].push_back(curMinFlow);
             path++;
 
@@ -349,7 +370,7 @@ void backTrackPath(int s, int t, int n)
         bool flag = false;
         for (int i = head[curNode]; i != -1; i = edge[i].next)
         {
-            //if(edge[i].flow)
+            //if(edgeiocn[i].flow)
                // cout << edge[i].u << " "<< edge[i].v << " " << edge[i].flow << endl;
 
             if (edge[i].flow && !stackVisit[edge[i].v])
@@ -372,28 +393,108 @@ void backTrackPath(int s, int t, int n)
     }
 }
 
+list<vector<int> > probaibly;
+const int N = 100;
+list<int> st;
+int a[N];
+vector<int> scheme;
+
+void combin(int pos, int n)
+{
+    
+    if (n == 0)
+    {
+        scheme.clear();
+        // cout << "scheme " << endl;
+        for (list<int>::iterator iter = st.begin(); iter != st.end(); iter++)
+        {
+            cout << *iter << " ";
+            scheme.push_back(*iter);
+        }
+        probaibly.push_back(scheme);
+        cout << endl;
+        return;
+    }
+    else
+    {
+        for (int i = pos; i < N - n + 1; i++)
+        {
+            st.push_back(a[i]);
+            // cout << a[i] << " ";
+            combin(i + 1, n - 1);
+            st.pop_back();
+        }
+    }
+}
+
 
 //你要完成的功能总入口
 void deploy_server(char * topo[MAX_EDGE_NUM], int line_num,char * filename)
 {
-    constructGraph(topo);
-
-    int ans = MCMF(source, target, nodeNum + 2);
-
-    for (int i = 0; i < NE; i += 2)
-    {
-        edge[i].flow = edge[i].originCap - edge[i].cap;
-        if (edge[i].flow)
-            cout << edge[i].u << " "<< edge[i].v << " " <<edge[i].flow << endl;
+    cout << "start  " << endl;
+    list<int> result;
+    int n = 3;
+    // int alledge = NE;
+    for (int i = 0; i < N; i++) {
+        a[i] = i;
     }
-    cout << "sever_cost = " << sever_cost << endl;
+
+    for (int i = 0; i < N; i++)
+        cout << a[i] ;
+    cout << endl;
+    
+
+    combin(0, n);
+
+    for (list<vector<int> >::iterator iter = probaibly.begin(); iter != probaibly.end(); iter++)
+    {
+        
+        constructGraph(topo); // NE = alledge;
+
+        for (int i = 0; i < n; i++)
+        {
+            addedge(source, (*iter)[i], INF, sever_cost);
+        }
+
+        int ans = MCMF(source, target, nodeNum + 2);
+
+        for (int i = 0; i < NE; i += 2)
+        {
+            edge[i].flow = edge[i].originCap - edge[i].cap;
+            if (edge[i].flow)
+                cout << edge[i].u << " "<< edge[i].v << " " <<edge[i].flow << endl;
+        }
+        cout << "sever_cost = " << sever_cost << endl;
 
 
-    backTrackPath(source, target, nodeNum + 2);
-    cout << "all cost = " << ans + sever_cost * sever_count << endl;
-	// 需要输出的内容
+        backTrackPath(source, target, nodeNum + 2);
+        cout << "all cost = " << ans + sever_cost * sever_count << endl;
 
-	char * topo_file = (char *)malloc(5000 * sizeof(char));
+        bool flag = false;
+        for (int i = 0; i < consumeNodeNum; i++)
+        {
+            // cout << consu_supply[i] << " " << consu_demand[i] << endl;
+            if (consu_supply[i] != consu_demand[i])
+            {
+                flag = true;
+                break;
+            }
+        }
+
+        if (!flag)
+        {
+            cout << "Could Supply all demand, the result is true.\n";
+        }
+        else
+        {
+            cout << "The result is false.\n";
+        }
+    }
+
+
+    // 需要输出的内容
+    //
+    char * topo_file = (char *)malloc(5000 * sizeof(char));
     // memset(topo_file, '\0', 5000*sizeof(char));
 
 
@@ -412,6 +513,7 @@ void deploy_server(char * topo[MAX_EDGE_NUM], int line_num,char * filename)
         cout << endl;
     }
 
+    
 	write_result(topo_file, filename);
 
 }

@@ -1,1 +1,1 @@
-./cdn ../../case_example/case1.txt result.txt
+./cdn ../../case_example/case.txt result.txt
